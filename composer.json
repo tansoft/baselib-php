@@ -1,0 +1,23 @@
+{
+    "name": "tansoft/baselib",
+    "description": "some useful code in php",
+    "keywords": ["php", "useful"],
+    "type": "project",
+    "license": "GPLv3",
+    "autoload": {
+        "psr-4": {
+            "tslib\\":"src"
+        }
+    },
+    "authors": [
+        {
+            "name": "Barry Tang",
+            "email": "20962493@qq.com",
+            "homepage": "https://github.com/tansoft/"
+        }
+    ],
+    "require": {
+    },
+    "require-dev": {
+    }
+}
