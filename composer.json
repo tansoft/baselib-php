@@ -6,7 +6,7 @@
     "license": "GPLv3",
     "autoload": {
         "psr-4": {
-            "BaseLib\\":"src"
+            "Baselib\\":"src/"
         }
     },
     "authors": [
@@ -17,8 +17,10 @@
         }
     ],
     "require": {
+        "symfony/cache": "^4.1"
     },
     "require-dev": {
+        "symfony/cache": "^4.1",
         "phpunit/phpunit": "7.2.*"
     }
 }

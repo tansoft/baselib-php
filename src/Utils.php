@@ -31,7 +31,7 @@ class Utils{
     /**
      * 生成随机数
      *
-     * @param integer $length 随机数位数
+     * @param integer $length 随机数字节数
      * @return 随机数的16进制字符串
      */
     static public function randomBytes($length = 32) {
@@ -78,18 +78,18 @@ class Utils{
      * @param string $str 需要处理的字符串内容
      * @param string $begin 开始的字符串
      * @param string $end 结束字符串
-     * @param boolean $repl 匹配内容的处理方式 true：替换原文内容，false：不作任何修改，'array'：返回所有匹配内容（建议$recursive=true），callable：调用回调函数
+     * @param boolean or callable $repl 匹配内容的处理方式 true：替换原文内容，false：不作任何修改，'array'：返回所有匹配内容（建议$recursive=true），callable：调用回调函数
      * @param boolean $recursive 是否递归处理所有
-     * @param integer $offest 起始定位的偏移量
+     * @param integer $offset 起始定位的偏移量
      * @return 找不到返回false，找到返回对应内容，递归查找返回true，$repl='array'时返回找到的数组
      */
-    static public function stringPickup(&$str, $begin, $end = '', $repl = true, $recursive = false, $offest = 0)
+    static public function stringPickup(&$str, $begin, $end = '', $repl = true, $recursive = false, $offset = 0)
     {
         $slen = strlen($begin);
         if ($slen == 0) {
             $spos = 0;
         } else {
-            $spos = strpos($str, $begin, $offest);
+            $spos = strpos($str, $begin, $offset);
         }
         if (false === $spos) {
             return false;
@@ -126,5 +126,23 @@ class Utils{
             return true;
         }
         return $ret;
+    }
+
+    /**
+     * 设置cache连接，使用 psr-16 标准，扩展inc指令
+     *
+     * @param string $dsn 'memcached://user:pass@localhost?weight=33' or 'redis://user:pass@localhost'
+     * @return void
+     */
+    static public function getCacheInstance($dsn, $namespace = '', $defaultLifeTime = 0){
+        if (strpos($dsn, 'memcached://') === 0) {
+            //'memcached://user:pass@localhost?weight=33'
+            //array(array('localhost', 11211, 33))
+            return Cache\MemcachedCacheEx::createConnectionEx($dsn, $namespace, $defaultLifeTime);
+        } else if (strpos($dsn, '')) {
+            //'redis://user:pass@localhost'
+            //return new RedisCache(RedisCache::createConnection($dsn), $namespace, $defaultLifeTime);
+        }
+        return null;
     }
 }

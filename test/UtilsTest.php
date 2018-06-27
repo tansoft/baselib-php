@@ -50,5 +50,15 @@ final class UtilsTest extends TestCase {
         $output = 's <img src="http://test.com/a.png" /> <img src="http://test.com/b.png" /> <img src="http://test.com/c.png" /> e';
         Baselib\Utils::stringPickup($input, '<img', '>', array($this,'_replacecb'), true);
         $this->assertEquals($input, $output);
+        $output = 'http://test.com/b.png';
+        $ret = Baselib\Utils::stringPickup($input, 'src="','"', false, false, 20);
+        $this->assertEquals($ret, $output);
+    }
+    public function testTmp() {
+        $dsn = '';
+        $cache = BaseLib\Utils::getCacheInstance($dsn, 'test');
+        $counter = new BaseLib\CacheCounter($cache);
+        $counter->add('aaa');
+        var_dump($counter->get('aaa'));
     }
 }
