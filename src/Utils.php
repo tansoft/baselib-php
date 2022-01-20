@@ -31,6 +31,8 @@ class Utils{
     /**
      * 生成随机数
      *
+     * 在vendor引入的paragonie/random_compat即可实现
+     *
      * @param integer $length 随机数字节数
      * @return 随机数的16进制字符串
      */
@@ -139,10 +141,20 @@ class Utils{
             //'memcached://user:pass@localhost?weight=33'
             //array(array('localhost', 11211, 33))
             return Cache\MemcachedCacheEx::createConnectionEx($dsn, $namespace, $defaultLifeTime);
-        } else if (strpos($dsn, '')) {
+        } else if (strpos($dsn, 'redis://') === 0) {
             //'redis://user:pass@localhost'
             //return new RedisCache(RedisCache::createConnection($dsn), $namespace, $defaultLifeTime);
         }
         return null;
+    }
+    /**
+     * 异步执行命令
+     *
+     * @param string $cmd 执行命令行
+     * @return void
+     */
+    static public function asyncExec($cmd) {
+        $cmd .= ' 2> /dev/null 1>&2 &';
+        system($cmd);
     }
 }

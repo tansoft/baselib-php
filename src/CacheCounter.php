@@ -20,7 +20,7 @@ define('MAXSAVE_DATE', 5);              ///<汇总信息里只保留最近7天�
 /*
     简单计数器实现，支持简单的汇总统计
     增加计数：
-        $counter->add('sthkey');
+        $counter->inc('sthkey');
     读取计数：
         $cnt = $counter->get('sthkey');
     获取最后更新时间：
@@ -100,23 +100,26 @@ class CacheCounter
         return $info;
     }
     public function set($name, $cnt) {
-        $this->_perParse($name);
-        return $this->cache->set(CACHECOUNTER_PREFIX.$name, $cnt, 0);
+        $this->_perParse($name, time());
+        return $this->cache->set(CACHECOUNTER_PREFIX.$name, $cnt);
     }
-    public function add($name, $cnt=1) {
-        $this->_perParse($name);
-        return $this->cache->add(CACHECOUNTER_PREFIX.$name, $cnt, 0);
+    public function inc($name, $cnt=1) {
+        $this->_perParse($name, time());
+        return $this->cache->inc(CACHECOUNTER_PREFIX.$name, $cnt);
     }
     public function touch($name) {
-        $this->_perParse($name);
+        $this->_perParse($name, time());
     }
-    protected function _perParse($name) {
+    protected function _perParse($name, $curts) {
         $lastts = $this->cache->get(CACHELASTTS_PREFIX.$name, 0);
-        $curts = time();
+        var_dump($lastts);
+        var_dump($curts);
         //先更新减少跨天reset的冲突
-        $this->cache->set(CACHELASTTS_PREFIX.$name, $curts, 0);
+        $this->cache->set(CACHELASTTS_PREFIX.$name, $curts);
+        var_dump($this->cache->get(CACHELASTTS_PREFIX.$name));
         $curday = strtotime(date("Y-m-d"), $curts);
         if ($lastts != 0 && $lastts<$curday) {
+            var_dump('new day');
             //new day
             $curcntkey = CACHECOUNTER_PREFIX.$name;
             $lastdaycntkey = CACHELASTDAYCNT_PREFIX.$name;
@@ -139,6 +142,10 @@ class CacheCounter
             foreach($info as $ts=>$inf) {
                 if ($ts < $minday) unset($info[$ts]);
             }
+            var_dump(array(
+                $lastdaycntkey => $curcnt,
+                $infokey => $info,
+                $earlytskey => $curts));
             $this->cache->setMultiple(array(
                 $lastdaycntkey => $curcnt,
                 $infokey => $info,

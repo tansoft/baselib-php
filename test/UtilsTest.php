@@ -3,18 +3,16 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-require_once('src/Utils.php');
-
 final class UtilsTest extends TestCase {
     public function testBaseInit() {
-        Baselib\Utils::baseInit(['time_zone'=>'Asia/Chongqing','memory_limit'=>'1024M']);
-        //try if can allow 900M string
+        Baselib\Utils::baseInit(['time_zone'=>'Asia/Chongqing','memory_limit'=>'1000M']);
+        //try if can allow 250M string
         $key = '';
         for($i=0;$i<1000000;$i++) {
             $key .= '0';
         }
         $bigstr = '';
-        for($i=0;$i<900;$i++) {
+        for($i=0;$i<250;$i++) {
             $bigstr .= $key;
         }
         $bigstr = '';
@@ -54,11 +52,10 @@ final class UtilsTest extends TestCase {
         $ret = Baselib\Utils::stringPickup($input, 'src="','"', false, false, 20);
         $this->assertEquals($ret, $output);
     }
-    public function testTmp() {
-        $dsn = '';
-        $cache = BaseLib\Utils::getCacheInstance($dsn, 'test');
-        $counter = new BaseLib\CacheCounter($cache);
-        $counter->add('aaa');
-        var_dump($counter->get('aaa'));
+    public function testAsyncExecute() {
+        $start = microtime(true);
+        Baselib\Utils::asyncExec('sleep 1');
+        $end = microtime(true);
+        $this->assertLessThan(0.5, $end - $start);
     }
 }
